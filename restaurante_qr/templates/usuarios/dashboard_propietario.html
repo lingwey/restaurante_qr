@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Dashboard propietario
+{% endblock title %}
+
+
+{% block content %}
+    <h2>Dashboard del propietario</h2>
+    <a href="{% url 'restaurantes:crear_restaurante' %}" >Agregar nuevo restaurante</a>
+    
+
+
+    <form method="get">
+    <label for="restaurante">Seleccioná un restaurante:</label>
+    <select name="restaurante" onchange="this.form.submit()">
+        <option value="">-- Elegí uno --</option>
+        {% for r in restaurantes %}
+        <option value="{{ r.id }}" {% if restaurante_activo and r.id == restaurante_activo.id %}selected{% endif %}>
+            {{ r.nombre }}
+        </option>
+        {% endfor %}
+    </select>
+    </form>
+
+    {% if restaurante_activo %}
+    <h3>Restaurante: {{ restaurante_activo.nombre }}</h3>
+    <h4>Gestión de menú</h4>
+    <a href="{% url 'menu:gestionar_menu' restaurante_activo.id %}" >Gestionar menú</a>
+    <a href="{% url 'menu:crear_menu' restaurante_activo.id %}" >Crear menú</a>
+    <a href="{% url 'menu:editar_menu' restaurante_activo.id %}" >Editar menú</a>
+
+    <h4>Mozos asignados</h4>
+    <ul>
+        {% for m in mozos %}
+        <li>{{ m.usuario.username }} - Validado: {{ m.validado }}</li>
+        {% empty %}
+        <li>No hay mozos asignados.</li>
+        {% endfor %}
+    </ul>
+
+    <h4>Mesas</h4>
+    <ul>
+        {% for mesa in mesas %}
+        <li>Mesa {{ mesa.numero }} - {{ mesa.ubicacion }}</li>
+        {% empty %}
+        <li>No hay mesas registradas.</li>
+        {% endfor %}
+    </ul>
+
+    <h4>Pedidos</h4>
+    <!-- para los pedidos [numero de mesa][pedido del menu][costo total] -->
+    {% endif %}
+
+{% endblock content %}
+    
+    

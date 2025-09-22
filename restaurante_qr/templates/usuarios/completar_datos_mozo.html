@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Registro de mozo{% endblock title %}
+    
+
+{% block content %}
+    <h2>Completá tus datos como mozo</h2>
+    <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Enviar</button>
+    </form>
+
+{% endblock content %}
+    

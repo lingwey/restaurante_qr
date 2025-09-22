@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Restaurante QR{% endblock %}</title>
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        {% if user.is_authenticated %}
+          <li><a href="{% url 'usuarios:dashboard' %}">Dashboard</a></li>
+            <li><form action="{% url 'logout' %}" method="post" >
+                {% csrf_token %}
+                <button type="submit">Cerrar sesión</button>
+            </form></li>
+        {% else %}
+            <li><form action= "{% url 'login'%}" method="post">
+                {% csrf_token %}
+                <button type="submit">Iniciar sesion</button>
+            </form></li>
+            <li><a href="{% url 'usuarios:registro_usuario' %}">Crear cuenta</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+
+  {% if messages %}
+    <div class="alertas">
+      {% for message in messages %}
+        <div class="alert">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>&copy; {{ now|date:"Y" }} Restaurante QR</p>
+  </footer>
+</body>
+</html>

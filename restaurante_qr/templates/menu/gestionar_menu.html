@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    gestor de menu
+{% endblock title %}
+
+
+{% block content %}
+    
+    <h2>Gestión de menú para {{ restaurante.nombre }}</h2>
+
+    <div>
+        <!-- Sección: Crear categoría -->
+        <div>
+            <h3>Crear nueva categoría</h3>
+            <form method="post" action="{{ request.path }}">
+            {% csrf_token %}
+            {{ categoria_form.as_p }}
+            <button type="submit">Guardar categoría</button>
+            </form>
+        </div>
+
+        <!-- Sección: Crear plato -->
+        <div>
+            <h3>Agregar nuevo plato</h3>
+            <form method="post" enctype="multipart/form-data" action="{{ request.path }}">
+            {% csrf_token %}
+            {{ producto_form.as_p }}
+            <button type="submit">Guardar plato</button>
+            </form>
+        </div>
+    </div>
+    <hr>
+    <h3>Categorías y platos cargados</h3>
+
+    {% if categorias %}
+    {% for categoria in categorias %}
+        <h4>{{ categoria.nombre }}</h4>
+        <ul>
+        {% for producto in categoria.producto_set.all %}
+            <li>
+            {{ producto.nombre }} - ${{ producto.precio }} 
+            {% if not producto.disponible %}<span>(No disponible)</span>{% endif %}
+            <a href="{% url 'menu:editar_producto' producto.id %}">Editar</a> |
+            <a href="{% url 'menu:eliminar_producto' producto.id %}">Eliminar</a>
+            </li>
+        {% empty %}
+            <li>No hay platos en esta categoría.</li>
+        {% endfor %}
+        </ul>
+    {% endfor %}
+    {% else %}
+    <p>No hay categorías creadas aún. Creá una para comenzar a cargar platos.</p>
+    {% endif %}
+
+
+{% endblock content %}
+    
+    

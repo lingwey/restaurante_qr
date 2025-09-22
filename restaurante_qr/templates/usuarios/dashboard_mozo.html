@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Dashboard mozos
+{% endblock title %}
+
+
+{% block content %}
+    <h2>Dashboard del mozo</h2>
+
+    <h3>Mesas asignadas</h3>
+    <ul>
+    {% for mesa in mesas %}
+        <li>
+        Mesa {{ mesa.numero }} - {{ mesa.ubicacion }}
+        <form method="post" action="{% url 'restaurantes:habilitar_mesa' mesa.id %}">
+            {% csrf_token %}
+            <button type="submit">Habilitar menú</button>
+        </form>
+        </li>
+    {% endfor %}
+    </ul>
+
+    <h3>Pedidos</h3>
+    <!-- para los pedidos [numero de mesa][pedido del menu][costo total] -->
+{% endblock content %}
+    
+    
