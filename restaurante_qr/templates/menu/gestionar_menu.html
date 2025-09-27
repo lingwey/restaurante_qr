@@ -20,7 +20,23 @@
             <button type="submit">Guardar categoría</button>
             </form>
         </div>
+        <!---editor de categorias--->
+        <div>        
+            {% for categoria in categorias %}
+                    <h4>{{ categoria.nombre }}</h4>
+                    <form method="post" action="{% url 'menu:editar_categoria' categoria.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="text" name="nombre" value="{{ categoria.nombre }}" required>
+                        
+                        <a href="{% url 'menu:subir_categoria' categoria.id %}">⬆️</a>
+                        <a href="{% url 'menu:bajar_categoria' categoria.id %}">⬇️</a>
 
+                        <button type="submit">Actualizar</button>
+                    </form>
+                    <a href="{% url 'menu:eliminar_categoria' categoria.id %}">Eliminar</a>
+                
+            {% endfor %}       
+        </div>
         <!-- Sección: Crear plato -->
         <div>
             <h3>Agregar nuevo plato</h3>
@@ -39,11 +55,27 @@
         <h4>{{ categoria.nombre }}</h4>
         <ul>
         {% for producto in categoria.producto_set.all %}
-            <li>
+            <li style="
+            {% if producto.disponible == False %}
+                color: red;
+            {% endif %}
+                "
+                >
             {{ producto.nombre }} - ${{ producto.precio }} 
             {% if not producto.disponible %}<span>(No disponible)</span>{% endif %}
             <a href="{% url 'menu:editar_producto' producto.id %}">Editar</a> |
             <a href="{% url 'menu:eliminar_producto' producto.id %}">Eliminar</a>
+            <form method='post' action="{% url 'menu:producto_disponible' producto.id %}">
+                {% csrf_token %}
+                <input type='checkbox' onchange='this.form.submit()' name='disponible'
+                {% if producto.disponible %}
+                    checked
+                {% endif %}>
+                {% if producto.disponible == False %}
+                    <span>agotado</span>
+                {% endif %} 
+            </form>
+
             </li>
         {% empty %}
             <li>No hay platos en esta categoría.</li>

@@ -4,7 +4,7 @@ from restaurantes.models import Restaurante
 class Categoria(models.Model):
     nombre= models.CharField(max_length=100)
     restaurante= models.ForeignKey(Restaurante, on_delete=models.CASCADE)
-    orden= models.PositiveIntegerField(default=0)
+    orden= models.PositiveIntegerField(editable=False,default=0)
     
     class Meta:
         unique_together=('nombre', 'restaurante')

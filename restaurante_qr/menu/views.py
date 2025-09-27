@@ -56,3 +56,58 @@ def eliminar_producto(request, producto_id):
     restaurante_id = producto.restaurante.id
     producto.delete()
     return redirect('menu:gestionar_menu', restaurante_id=restaurante_id)
+
+@login_required
+def producto_diponible(request, producto_id):
+    producto=get_object_or_404(Producto, id=producto_id, restaurante__propietario=request.user)
+    producto.disponible= not producto.disponible
+    producto.save()
+    return redirect('menu:gestionar_menu', restaurante_id=producto.restaurante.id)
+
+@login_required
+def editar_categoria(request, categoria_id):
+    categoria = get_object_or_404(Categoria, id=categoria_id, restaurante__propietario=request.user)
+
+    if request.method == 'POST':
+        nuevo_nombre = request.POST.get('nombre')
+        if nuevo_nombre:
+            categoria.nombre = nuevo_nombre
+            categoria.save()
+    return redirect('menu:gestionar_menu', restaurante_id=categoria.restaurante.id)
+
+@login_required
+def eliminar_categoria(request, categoria_id):
+    categoria= get_object_or_404(Categoria, id=categoria_id, restaurante__propietario=request.user)
+    restaurante_id = categoria.restaurante.id
+    categoria.delete()
+    return redirect('menu:gestionar_menu', restaurante_id=restaurante_id)
+
+@login_required
+def subir_categoria(request, categoria_id):
+    categoria = get_object_or_404(Categoria, id=categoria_id, restaurante__propietario=request.user)
+    anterior = Categoria.objects.filter(
+        restaurante=categoria.restaurante,
+        orden__lt=categoria.orden
+    ).order_by('-orden').first()
+
+    if anterior:
+        categoria.orden, anterior.orden = anterior.orden, categoria.orden
+        categoria.save()
+        anterior.save()
+
+    return redirect('menu:gestionar_menu', restaurante_id=categoria.restaurante.id)
+
+@login_required
+def bajar_categoria(request, categoria_id):
+    categoria = get_object_or_404(Categoria, id=categoria_id, restaurante__propietario=request.user)
+    siguiente = Categoria.objects.filter(
+        restaurante=categoria.restaurante,
+        orden__gt=categoria.orden
+    ).order_by('orden').first()
+
+    if siguiente:
+        categoria.orden, siguiente.orden = siguiente.orden, categoria.orden
+        categoria.save()
+        siguiente.save()
+
+    return redirect('menu:gestionar_menu', restaurante_id=categoria.restaurante.id)

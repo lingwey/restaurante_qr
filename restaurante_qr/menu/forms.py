@@ -1,10 +1,11 @@
 from django import forms
+from django.db.models import Max
 from .models import Categoria, Producto
 
 class CategoriaForm(forms.ModelForm):
     class Meta:
         model = Categoria
-        fields = ['nombre', 'orden']
+        fields = ['nombre']
         widgets = {
             'nombre': forms.TextInput(attrs={'placeholder': 'Ej: Pastas, Bebidas, Postres'}),
         }
@@ -20,11 +21,17 @@ class CategoriaForm(forms.ModelForm):
         return nombre
 
     def save(self, commit=True):
-        categoria = super().save(commit=False)
-        categoria.restaurante = self.restaurante
+        nueva_categoria = super().save(commit=False)
+        nueva_categoria.restaurante = self.restaurante
+
+        if nueva_categoria.orden == 0:
+            ultimo = Categoria.objects.filter(restaurante=self.restaurante).aggregate(Max('orden'))['orden__max'] or 0
+            nueva_categoria.orden = ultimo + 1
+
         if commit:
-            categoria.save()
-        return categoria
+            nueva_categoria.save()
+        return nueva_categoria
+
 
 class ProductoForm(forms.ModelForm):
     class Meta:

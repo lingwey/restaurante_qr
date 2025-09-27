@@ -25,10 +25,7 @@
 
     {% if restaurante_activo %}
     <h3>Restaurante: {{ restaurante_activo.nombre }}</h3>
-    <h4>Gestión de menú</h4>
-    <a href="{% url 'menu:gestionar_menu' restaurante_activo.id %}" >Gestionar menú</a>
-    <a href="{% url 'menu:crear_menu' restaurante_activo.id %}" >Crear menú</a>
-    <a href="{% url 'menu:editar_menu' restaurante_activo.id %}" >Editar menú</a>
+    <h4><a href="{% url 'menu:gestionar_menu' restaurante_activo.id %}" >Gestionar menú</a></h4>
 
     <h4>Mozos asignados</h4>
     <ul>
