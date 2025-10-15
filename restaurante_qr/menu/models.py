@@ -32,3 +32,15 @@ class Producto(models.Model):
 
 
     
+class RangoHorario(models.Model):
+    restaurante = models.ForeignKey(Restaurante, on_delete=models.CASCADE)
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name='rangos_horarios')
+    
+    hora_inicio = models.TimeField()
+    hora_fin = models.TimeField()
+
+    class Meta:
+        verbose_name_plural = 'Rangos horarios por categoría'
+
+    def __str__(self):
+        return f"{self.categoria.nombre}: {self.hora_inicio} - {self.hora_fin}"

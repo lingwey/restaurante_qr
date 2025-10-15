@@ -10,6 +10,8 @@ urlpatterns = [
     path('categoria/eliminar/<int:categoria_id>/', eliminar_categoria, name='eliminar_categoria'),
     path('categoria/subir/<int:categoria_id>/', subir_categoria, name='subir_categoria'),
     path('categoria/bajar/<int:categoria_id>/', bajar_categoria, name='bajar_categoria'),
+    path( 'horario/eliminar/<int:horario_id>/', elimanr_rango_horario, name='elimanr_rango_horario'),
+    path('horario/editar/<int:horario_id>/', editar_rango_horario, name='editar_rango_horario')
 
 
 

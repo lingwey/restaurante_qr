@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load menu_extras %}
 
 {% block title %}
     gestor de menu
@@ -20,6 +20,11 @@
             <button type="submit">Guardar categoría</button>
             </form>
         </div>
+        <div>
+
+
+        </div>
+        
         <!---editor de categorias--->
         <div>        
             {% for categoria in categorias %}
@@ -34,7 +39,54 @@
                         <button type="submit">Actualizar</button>
                     </form>
                     <a href="{% url 'menu:eliminar_categoria' categoria.id %}">Eliminar</a>
-                
+                    
+                    <!-- Horarios existentes -->
+                    {% if categoria.rangos_horarios.all %}
+                    
+                        <ul>
+                        {% for horario in categoria.rangos_horarios.all %}
+                            <li>
+                                {{ horario.hora_inicio }} - {{ horario.hora_fin }}
+                                <a href= "?editar_rango_horario={{horario.id}}">editar horario</a> |
+                                <a href= "{%url 'menu:elimanr_rango_horario' horario.id %}">eliminar horario</a>
+                                
+                                {% for editable in horarios_editables %}
+                                    {% if editable.horario.id == horario.id and editar_horario_id == horario.id|stringformat:"s" %}
+                                        <form method="post" action="{% url 'menu:editar_rango_horario' horario.id %}">
+                                            {% csrf_token %}
+                                            {{ editable.form.as_p }}
+                                            <button type="submit">Guardar</button>
+                                        </form>
+                                    {% endif %}
+                                {% endfor %}
+                                    
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No hay horarios asignados.</p>
+                    {% endif %}
+
+                    <!-- Formulario para agregar horario -->
+                    
+                    {% with formset=formsets_por_categoria|get_item:categoria.id %}
+                        {% if formset.forms %}
+                            <form method="post" action="{{ request.path }}" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="rango_categoria_id" value="{{ categoria.id }}">
+                                {{ formset.management_form }}
+                                {% for form in formset %}
+                                    {{ form.as_p }}
+                                {% endfor %}
+                                <button type="submit">Añadir horarios</button>
+                            </form>
+                        {% else %}
+                            <p>Ya se asignaron todos los horarios permitidos para esta categoría.</p>
+                        {% endif %}
+                    {% endwith %}
+                        
+
+
             {% endfor %}       
         </div>
         <!-- Sección: Crear plato -->
@@ -61,7 +113,9 @@
             {% endif %}
                 "
                 >
-            {{ producto.nombre }} - ${{ producto.precio }} 
+            {{ producto.nombre }} - ${{ producto.precio }}
+            {{producto.descripcion}}
+            {{producto.imagen}}
             {% if not producto.disponible %}<span>(No disponible)</span>{% endif %}
             <a href="{% url 'menu:editar_producto' producto.id %}">Editar</a> |
             <a href="{% url 'menu:eliminar_producto' producto.id %}">Eliminar</a>

@@ -11,7 +11,7 @@
         <form method='post' >
             {% csrf_token %}
             <input type='text' name= 'nombre' value='{{producto.nombre}}'>
-            <input type='textarea' naem='descripcion' value='{{producto.descripcion}}' >
+            <input type='textarea' name='descripcion' value='{{producto.descripcion}}' >
             <input type='number' name='precio' value= '{{producto.precio}}' step='0.01'>
             <input type='checkbox' name= 'disponible' {% if producto.disponible%} checked {%endif%}>
             <input type='file' name='imagen' value='{{producto.imagen}}'>

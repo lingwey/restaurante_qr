@@ -1,6 +1,7 @@
 from django import forms
+from django.forms import modelformset_factory 
 from django.db.models import Max
-from .models import Categoria, Producto
+from .models import Categoria, Producto, RangoHorario
 
 class CategoriaForm(forms.ModelForm):
     class Meta:
@@ -45,3 +46,42 @@ class ProductoForm(forms.ModelForm):
 
         if restaurante:
             self.fields['categoria'].queryset = Categoria.objects.filter(restaurante=restaurante)
+
+
+class RangoHorarioForm(forms.ModelForm):
+    class Meta:
+        model = RangoHorario
+        fields = [ 'hora_inicio', 'hora_fin']
+        widgets = {
+            'hora_inicio': forms.TimeInput(attrs={'type': 'time'}),
+            'hora_fin': forms.TimeInput(attrs={'type': 'time'}),
+        }
+        
+    def __init__(self, *args, **kwargs):
+        self.categoria = kwargs.pop('categoria', None)
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        inicio = cleaned_data.get('hora_inicio')
+        fin = cleaned_data.get('hora_fin')
+        
+        if inicio and fin and inicio >= fin:
+            raise forms.ValidationError('La hora de inicio debe ser menor que la hora final.')
+        
+        if self.categoria and self.categoria.rangos_horarios.count() >= 3:
+            raise forms.ValidationError('Esta categoría ya tiene el máximo de horarios asignados.')
+        return cleaned_data
+        
+
+def get_rango_horario_formset(extra=1):
+    return modelformset_factory(
+        RangoHorario,
+        fields=('hora_inicio', 'hora_fin'),
+        extra=extra,
+        max_num=1,
+        widgets={
+            'hora_inicio': forms.TimeInput(attrs={'type': 'time'}),
+            'hora_fin': forms.TimeInput(attrs={'type': 'time'}),
+        }
+    )
