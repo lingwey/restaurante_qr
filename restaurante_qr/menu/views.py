@@ -4,6 +4,10 @@ from restaurantes.models import Restaurante
 from .forms import CategoriaForm, ProductoForm, RangoHorarioForm, get_rango_horario_formset
 from .models import Categoria, Producto, RangoHorario
 from django.contrib import messages
+from django.conf import settings
+from core.supabase import subir_imagen_a_supabase
+
+
 
 @login_required
 def crear_menu(request, restaurante_id):
@@ -22,25 +26,58 @@ def gestionar_menu(request, restaurante_id):
     editar_horario_id = request.GET.get('editar_rango_horario')
 
     categoria_form = CategoriaForm(request.POST or None, restaurante=restaurante, prefix='cat')
-    producto_form = ProductoForm(request.POST or None, request.FILES or None, restaurante=restaurante, prefix='producto')
-
+    producto_form = ProductoForm(restaurante=restaurante, prefix='producto')
+    print("solicitud post del Usuario:", request.user)
     formsets_por_categoria = {}
     horarios_editables = []
 
     # Procesamiento de formularios
     if request.method == 'POST':
+        print("📨 Claves POST recibidas:", list(request.POST.keys()))
         if 'cat-nombre' in request.POST:
             if categoria_form.is_valid():
                 categoria_form.save()
+                print("creacion de categoria exitosa")
                 return redirect(request.path)
 
         elif 'producto-nombre' in request.POST:
+            
+            print("📨 POST keys:", list(request.POST.keys()))
+            print("📦 FILES keys:", list(request.FILES.keys()))
+            producto_form = ProductoForm(data=request.POST, 
+                                         files=request.FILES, 
+                                         restaurante=restaurante,                                         
+                                         prefix='producto')
+
             if producto_form.is_valid():
                 plato = producto_form.save(commit=False)
                 plato.restaurante = restaurante
+                print("📦 request.FILES:", request.FILES)
+                imagen = request.FILES.get('producto-imagen')
+                print("📸 Imagen obtenida:", imagen)
+                if not imagen:
+                    print("⚠️ No se recibió archivo en request.FILES")
+                else:
+                    print("📤 Subiendo a Supabase:", imagen)
+                    if imagen.content_type not in ['image/jpeg', 'image/png']:
+                        print("❌ Tipo de imagen no permitido:", imagen.content_type)
+                    elif imagen.size > 5 * 1024 * 1024:
+                        print("❌ Imagen demasiado grande:", imagen.size)
+                    else:
+                        carpeta = f"productos/restaurante_{restaurante.id}"
+                        url = subir_imagen_a_supabase(imagen, carpeta=carpeta, bucket='imagenes')
+                        if url:
+                            plato.imagen = url
+
                 plato.save()
                 return redirect(request.path)
+            else:
+                print("❌ Formulario inválido:", producto_form.errors.as_data())
+            if not producto_form.is_valid():
+                print("❌ Formulario inválido:", producto_form.errors)
 
+
+        #añade rangos de horarios
         elif 'rango_categoria_id' in request.POST:
             categoria_id = request.POST.get('rango_categoria_id')
             if not categoria_id:
@@ -84,7 +121,7 @@ def gestionar_menu(request, restaurante_id):
         FormSet = get_rango_horario_formset(extra=cantidad_restante)
         formset = FormSet(queryset=RangoHorario.objects.none(), prefix=prefix)
         formsets_por_categoria[categoria.id] = formset
-
+    print("solicutud terminada")
     return render(request, 'menu/gestionar_menu.html', {
         'restaurante': restaurante,
         'categoria_form': categoria_form,

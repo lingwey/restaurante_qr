@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,6 +26,18 @@ SECRET_KEY = 'django-insecure-8wqi5)+x-h9+rp8#5bfvpi9jdis3s-10(c+xmbavqp^pj__a3=
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+
+
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+
+SUPABASE_URL = env('SUPABASE_URL')
+SUPABASE_BUCKET = env('SUPABASE_BUCKET', default='imagenes')
+SUPABASE_API_KEY = env('SUPABASE_API_KEY')
+#print("SUPABASE_URL:", env('SUPABASE_URL'))
+
 
 ALLOWED_HOSTS = []
 
@@ -130,6 +143,8 @@ LOGIN_REDIRECT_URL = '/usuarios/dashboard/'
 LOGIN_URL = 'login'
 
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 try:

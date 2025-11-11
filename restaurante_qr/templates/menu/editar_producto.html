@@ -14,6 +14,13 @@
             <input type='textarea' name='descripcion' value='{{producto.descripcion}}' >
             <input type='number' name='precio' value= '{{producto.precio}}' step='0.01'>
             <input type='checkbox' name= 'disponible' {% if producto.disponible%} checked {%endif%}>
+            
+                {% if producto.imagen %}
+                    <img src="{{producto.imagen}}" alt="imagen de {{producto.nombre}}" style="max-height: 100px">
+                {% else %}
+                    <span style="color: gray">no hay imagen disponible</span>
+                {% endif %}
+                
             <input type='file' name='imagen' value='{{producto.imagen}}'>
             <input type='hidden' name='categoria' value= '{{producto.categoria.id}}'>
             <button type='submit'>Guardar cambios</button>

@@ -35,9 +35,16 @@ class CategoriaForm(forms.ModelForm):
 
 
 class ProductoForm(forms.ModelForm):
+    imagen=forms.ImageField(required=False)
     class Meta:
         model = Producto
-        fields = ['nombre', 'descripcion', 'precio', 'imagen', 'categoria', 'disponible']
+        fields = ['nombre', 'descripcion', 'precio', 'categoria', 'disponible']
+    
+    def clean_imagen(self):
+        imagen_archivo = self.cleaned_data.get('imagen')
+        if imagen_archivo is None:
+             return None  
+        return imagen_archivo
         
     #crea el apartado del selector de categorias usando lo creado en el CategoriaForm
     def __init__(self, *args, **kwargs):

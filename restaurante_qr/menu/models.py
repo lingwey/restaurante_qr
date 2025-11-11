@@ -17,7 +17,7 @@ class Producto(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion= models.TextField(blank=True)
     precio= models.DecimalField(max_digits=6, decimal_places=2)
-    imagen= models.ImageField(upload_to='productos/',blank=True, null=True)
+    imagen= models.URLField(blank=True, null=True)
     disponible= models.BooleanField(default=True)
     orden= models.PositiveIntegerField(default=0)
     #relacion con categoria y restaurante

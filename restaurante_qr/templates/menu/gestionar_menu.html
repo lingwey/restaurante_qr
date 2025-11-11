@@ -93,9 +93,9 @@
         <div>
             <h3>Agregar nuevo plato</h3>
             <form method="post" enctype="multipart/form-data" action="{{ request.path }}">
-            {% csrf_token %}
-            {{ producto_form.as_p }}
-            <button type="submit">Guardar plato</button>
+                {% csrf_token %}
+                {{ producto_form.as_p }}
+                <button type="submit" name= 'producto-submit'>Guardar plato</button>
             </form>
         </div>
     </div>
@@ -113,22 +113,28 @@
             {% endif %}
                 "
                 >
-            {{ producto.nombre }} - ${{ producto.precio }}
-            {{producto.descripcion}}
-            {{producto.imagen}}
-            {% if not producto.disponible %}<span>(No disponible)</span>{% endif %}
-            <a href="{% url 'menu:editar_producto' producto.id %}">Editar</a> |
-            <a href="{% url 'menu:eliminar_producto' producto.id %}">Eliminar</a>
-            <form method='post' action="{% url 'menu:producto_disponible' producto.id %}">
-                {% csrf_token %}
-                <input type='checkbox' onchange='this.form.submit()' name='disponible'
-                {% if producto.disponible %}
-                    checked
-                {% endif %}>
-                {% if producto.disponible == False %}
-                    <span>agotado</span>
-                {% endif %} 
-            </form>
+                {{ producto.nombre }} - ${{ producto.precio }}
+                {{producto.descripcion}}
+                
+                {% if producto.imagen %}
+                    <img src="{{producto.imagen}}" alt="imagen de {{producto.nombre}}" style="max-height: 100px">
+                {% else %}
+                    <span style="color: gray">no hay imagen disponible</span>
+                {% endif %}
+                    
+                {% if not producto.disponible %}<span>(No disponible)</span>{% endif %}
+                <a href="{% url 'menu:editar_producto' producto.id %}">Editar</a> |
+                <a href="{% url 'menu:eliminar_producto' producto.id %}">Eliminar</a>
+                <form method='post' action="{% url 'menu:producto_disponible' producto.id %}">
+                    {% csrf_token %}
+                    <input type='checkbox' onchange='this.form.submit()' name='disponible'
+                    {% if producto.disponible %}
+                        checked
+                    {% endif %}>
+                    {% if producto.disponible == False %}
+                        <span>agotado</span>
+                    {% endif %} 
+                </form>
 
             </li>
         {% empty %}

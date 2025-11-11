@@ -12,6 +12,7 @@ def crear_restaurante(request):
     if form.is_valid():
         restaurante = form.save(commit= False)
         restaurante.propietario = request.user
+        #url = subir_imagen_a_supabase(imagen, carpeta=f"logos/restaurante_{restaurante.id}")
         restaurante.save()
         return redirect('restaurantes:editar_restaurante', restaurante.id)
     return render (request, 'restaurantes/crear_restaurante.html', {'form': form})

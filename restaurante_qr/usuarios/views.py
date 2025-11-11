@@ -28,7 +28,7 @@ def completar_datos_mozo(request):
     if form.is_valid():
         restaurante = form.cleaned_data['nombre_restaurante']
         foto = form.cleaned_data.get('foto')
-
+        #url = subir_imagen_a_supabase(imagen, carpeta=f"perfil/usuario_{usuario.id}")
         MozoAsignado.objects.create(
             usuario=usuario,
             restaurante=restaurante,
@@ -52,18 +52,19 @@ def dashboard(request):
 
     elif usuario.rol == 'mozo':
         return redirect('usuarios:dashboard_mozo')
-
+    print("👤 Usuario autenticado:", request.user.is_authenticated)
+    print("👤 Usuario:", request.user)
     return redirect('home')
     
 @login_required
 def dashboard_propietario(request):
     usuario = request.user
     restaurantes = Restaurante.objects.filter(propietario=usuario)
-
     restaurante_id = request.GET.get('restaurante')
     restaurante_activo = None
     mozos = mesas = []
-
+    print("👤 Usuario autenticado:", request.user.is_authenticated)
+    print("👤 Usuario:", request.user)
     if restaurante_id:
         try:
             restaurante_activo = restaurantes.get(id=restaurante_id)
